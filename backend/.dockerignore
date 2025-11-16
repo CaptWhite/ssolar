@@ -1,0 +1,9 @@
+# Archivos y carpetas ignorados comúnmente en proyectos NestJS
+node_modules
+dist
+.env
+.git
+.gitignore
+Dockerfile
+npm-debug.log*
+yarn-error.log

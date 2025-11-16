@@ -1,0 +1,10 @@
+
+services:
+  heroes-nest-backend:
+    container_name: "heroes-backend"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+

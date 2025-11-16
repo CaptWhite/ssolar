@@ -1,0 +1,42 @@
+services:
+  # -----------------------------------
+  # 1. Servicio Backend (NestJS)
+  # -----------------------------------
+  heroes-nestjs-backend:
+    container_name: "heroes-backend"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    # El puerto 3000 NO se expone al host, solo a la red interna 'webnet-heroes'
+    # La aplicación se ejecuta internamente en el puerto 3000
+    expose:
+      - 3000
+    # Configuración de variables de entorno (si es necesario)
+    environment:
+      NODE_ENV: production
+      # Aquí podrías añadir variables de DB, etc.
+    networks:
+      - webnet-heroes
+
+  # -----------------------------------
+  # 2. Servicio Frontend (React/Nginx)
+  # -----------------------------------
+  heroes-react-frontend:
+    container_name: "heroes-frontend"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      # Expone el puerto 80 del Nginx interno al puerto 8088 del sistema anfitrión
+      - 8088:8080
+    # Es crucial que el frontend y el backend estén en la misma red
+    networks:
+      - webnet-heroes
+    # Se añade una dependencia para asegurar que el backend se inicie primero
+    depends_on:
+      - heroes-nestjs-backend
+    
+networks:
+  # 3. Definición de la red (webnet-heroes)
+  webnet-heroes:
+    driver: bridge

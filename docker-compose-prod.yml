@@ -1,0 +1,33 @@
+# ############   SSOLAR
+
+services:
+  ssolar-backend:
+    container_name: "${ROUTER}-backend"
+    image: captwhite/${ROUTER}-backend:latest
+    networks:
+      - webnet-ssolar
+
+
+  ssolar-frontend:
+    container_name: "${ROUTER}-frontend"
+    image: captwhite/${ROUTER}-frontend:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${ROUTER}-http.entrypoints=web"
+      - "traefik.http.routers.${ROUTER}-http.rule=Host(`${FQDN}.captwhite.com`)"
+      - "traefik.http.routers.${ROUTER}-http.middlewares=redirect-to-https@docker"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      #
+      - "traefik.http.routers.${ROUTER}.entrypoints=websecure"
+      - "traefik.http.routers.${ROUTER}.rule=Host(`${FQDN}.captwhite.com`)"
+      - "traefik.http.routers.${ROUTER}.tls=true"
+      - "traefik.http.routers.${ROUTER}.tls.certresolver=myresolver"
+      - "traefik.http.services.${ROUTER}.loadbalancer.server.port=8080"
+    depends_on:
+      - ${ROUTER}-backend
+    networks:
+      - webnet-ssolar
+    
+networks:
+  webnet-ssolar:
+    external: true

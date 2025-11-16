@@ -1,0 +1,9 @@
+
+services:
+  heroes-react-frontend:
+    container_name: "heroes-frontend"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8088:8080

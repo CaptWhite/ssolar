@@ -1,0 +1,30 @@
+# --- ETAPA 1: Construcción (Build Stage) ---
+# Usa una imagen Node.js completa para la compilación
+FROM node:25-alpine AS build
+
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /usr/src/app
+
+# Copia los archivos de manifiesto del proyecto (package.json y package-lock.json o yarn.lock)
+# Esto permite que Docker cachee esta capa si las dependencias no cambian
+COPY package*.json ./
+
+# Instala todas las dependencias (incluyendo las de desarrollo)
+# 'npm ci' es preferible a 'npm install' en entornos CI/CD/Docker
+RUN npm ci
+
+# Copia el resto del código fuente
+COPY . .
+
+# Ejecuta la compilación de NestJS (genera los archivos JavaScript en la carpeta 'dist')
+RUN npm run build
+
+
+# --- Instrucciones para anular el ENTRYPOINT de Node y lanzar Bash ---
+# 1. ENTRYPOINT: Anula el ENTRYPOINT de Node.js y establece el shell Bash como el programa principal
+ENTRYPOINT [ "/bin/sh" ]
+
+
+# 2. CMD: Se usa aquí para pasar argumentos, aunque en este caso no es necesario,
+#    se puede omitir o mantener como una lista vacía para claridad.
+CMD []
